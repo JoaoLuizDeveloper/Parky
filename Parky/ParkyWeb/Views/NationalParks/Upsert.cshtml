@@ -58,6 +58,16 @@
             </div>
             <div class="form-group row">
                 <div class="col-4 offset-4">
+                    <button type="submit" class="btn btn-primary form-control" >
+                        @if(Model.Id != 0)
+                        {
+                            <span>Update</span>
+                        }
+                        else
+                        {
+                            <span>Create</span>                             
+                        }
+                    </button>
                 </div>
                 <div class="col-4">
                     <a href="@Url.Action("Index", "NationalParks")" class="btn btn-success form-control">Back to List</a>
@@ -65,7 +75,25 @@
             </div>
         </div>
         <div class="col-4 text-right" style="width:250px;">
-            <img src="https://via.placeholder.com/150" style="width: 100%" />
+            @if (Model.Picture != null)
+            {
+                var base64 = Convert.ToBase64String(Model.Picture);
+                var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+                <img src="@imgsrc" style="width: 100%" />
+            }
+
         </div>
     </div>
 </form>
+
+@section scripts{ 
+<script>
+    $(function () {
+        $('#datepicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            YearRange: "1550:2030"
+        });
+    })
+</script>
+}
