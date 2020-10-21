@@ -7,13 +7,13 @@ $(document).ready(function () {
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         "ajax": {
-            "url": "/nationalParks/GetAllNationalPark",
+            "url": "/Trails/GetAllTrails",
             "type": "GET",
             "datatype": "json"
         },
         "columns": [
             {
-                "data": "name", "width": "50%",
+                "data": "nationalPark.name", "width": "25%",
                 "render": function (data) {
                     return `
                     <div>
@@ -25,7 +25,7 @@ function loadDataTable() {
                 }
             },
             {
-                "data": "state", "width": "20%",
+                "data": "name", "width": "20%",
                 "render": function (data) {
                     return `
                     <div>
@@ -35,16 +35,39 @@ function loadDataTable() {
                     </div>
                     `;
                 }
-
+            },
+            {
+                "data": "distance", "width": "15%",
+                "render": function (data) {
+                    return `
+                    <div>
+                        <div class='text-black' style="color:black;>">
+                            ${data}
+                        </div>
+                    </div>
+                    `;
+                }
+            },
+            {
+                "data": "elevation", "width": "15%",
+                "render": function (data) {
+                    return `
+                    <div>
+                        <div class='text-black' style="color:black;>">
+                            ${data}
+                        </div>
+                    </div>
+                    `;
+                }
             },
             {
                 "data": "id",
                 "render": function (data) {
                     return `<div class="text-center">
-                                <a href="/nationalParks/Upsert/${data}" class='btn btn-success text-black'
+                                <a href="/Trails/Upsert/${data}" class='btn btn-success text-white'
                                     style='cursor:pointer;'> <i class='far fa-edit'></i></a>
                                     &nbsp;
-                                <a onclick=Delete("/nationalParks/Delete/${data}") class='btn btn-danger text-black'
+                                <a onclick=Delete("/Trails/Delete/${data}") class='btn btn-danger text-white'
                                     style='cursor:pointer;'> <i class='far fa-trash-alt'></i></a>
                                 </div>
                             `;
