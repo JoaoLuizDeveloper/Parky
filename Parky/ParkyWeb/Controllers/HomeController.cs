@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ParkyWeb.Models;
@@ -15,13 +16,15 @@ namespace ParkyWeb.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly INationalParkRepository _npRepo;
+        private readonly IAccountRepository _AccountRepo;
         private readonly ITrailRepository _npTrail;
 
-        public HomeController(ILogger<HomeController> logger, INationalParkRepository npRepo, ITrailRepository npTrail)
+        public HomeController(ILogger<HomeController> logger, INationalParkRepository npRepo, ITrailRepository npTrail, IAccountRepository accountRepository)
         {
             _logger = logger;
             _npRepo = npRepo;
             _npTrail = npTrail;
+            _AccountRepo = accountRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -43,6 +46,56 @@ namespace ParkyWeb.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            User obj = new User();
+            return View(obj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(User model)
+        {
+            User objUser = await _AccountRepo.LoginAsync(SD.AccountAPIPath + "authenticate/", model);
+
+            if(objUser.Token == null)
+            {
+                return View();
+            }
+
+            HttpContext.Session.SetString("JWToken", objUser.Token);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(User model)
+        {
+            bool result = await _AccountRepo.RegisterAsyn(SD.AccountAPIPath + "register/", model);
+
+            if (result == false)
+            {
+                return View();
+            }
+
+            return RedirectToAction("Login");
+        }
+
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.SetString("JWToken", "");
+
+            return RedirectToAction("/Index");
         }
     }
 }
