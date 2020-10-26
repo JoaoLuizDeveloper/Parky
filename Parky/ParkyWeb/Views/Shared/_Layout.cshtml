@@ -32,8 +32,7 @@
         {
 
         }*@
-
-                        @if (!string.IsNullOrEmpty(HttpAcc.HttpContext.Session.GetString("JWToken").ToString()))
+                        @if (User.IsInRole("Admin") || User.IsInRole("user"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-controller="NationalParks" asp-action="Index">National Parks List</a>
@@ -41,6 +40,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-controller="Trails" asp-action="Index">Trail List</a>
                             </li>
+                        }
+
+                        @if (HttpAcc.HttpContext.Session.GetString("JWToken") != null && HttpAcc.HttpContext.Session.GetString("JWToken").ToString().Length > 0)
+                        {
+
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-controller="Home" asp-action="LogOut">Log Out</a>
                             </li>
@@ -61,6 +65,16 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if(TempData["alert"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["alert"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

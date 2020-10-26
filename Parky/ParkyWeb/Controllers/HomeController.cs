@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ParkyWeb.Models;
 using ParkyWeb.Models.ViewModel;
 using ParkyWeb.Repository.IRepository;
+using Microsoft.AspNetCore.Http;
 
 namespace ParkyWeb.Controllers
 {
@@ -27,12 +31,13 @@ namespace ParkyWeb.Controllers
             _AccountRepo = accountRepository;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             IndexVM listOfParkAndTrails = new IndexVM()
             {
-                NationalParkList = await _npRepo.GetAllAsync(SD.NationalParkAPIPath),
-                TrailList = await _npTrail.GetAllAsync(SD.TrailAPIPath)
+                NationalParkList = await _npRepo.GetAllAsync(SD.NationalParkAPIPath, HttpContext.Session.GetString("JWToken")),
+                TrailList = await _npTrail.GetAllAsync(SD.TrailAPIPath, HttpContext.Session.GetString("JWToken"))
             };
             return View(listOfParkAndTrails);
         }
@@ -66,7 +71,14 @@ namespace ParkyWeb.Controllers
                 return View();
             }
 
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.Name, objUser.UserName));
+            identity.AddClaim(new Claim(ClaimTypes.Role, objUser.Role));
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
             HttpContext.Session.SetString("JWToken", objUser.Token);
+            TempData["alert"] = "Welcome " + objUser.UserName;
 
             return RedirectToAction("Index");
         }
@@ -87,15 +99,22 @@ namespace ParkyWeb.Controllers
             {
                 return View();
             }
-
+            TempData["alert"] = "Registeration Successful " + objUser.UserName;
             return RedirectToAction("Login");
         }
 
-        public IActionResult LogOut()
+        public async Task<IActionResult> LogOut()
         {
+            await HttpContext.SignOutAsync();
             HttpContext.Session.SetString("JWToken", "");
 
-            return RedirectToAction("/Index");
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }
