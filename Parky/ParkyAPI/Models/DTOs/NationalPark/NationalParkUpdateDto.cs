@@ -1,13 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace ParkyAPI.Models
+namespace ParkyAPI.Models.DTOs
 {
-    public class NationalPark
+    public class NationalParkUpdateDto
     {
-        [Key]
         public int Id { get; set; }
-        [Required]
+        [Required]    
         public string Name { get; set; }
         [Required]
         public string State { get; set; }

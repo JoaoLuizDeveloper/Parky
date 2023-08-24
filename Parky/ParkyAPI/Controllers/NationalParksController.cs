@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Collections.Generic;
+using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +13,15 @@ namespace ParkyAPI.Controllers
     [ApiVersion("1.0")]
     //[Route("api/[controller]")]
     [ApiController]
-//    [ApiExplorerSettings(GroupName = "ParkyOpenApiSpecNP")]
+    //[ApiExplorerSettings(GroupName = "ParkyOpenApiSpecNP")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class NationalParksController : ControllerBase
     {
         private readonly INationalParkRepository _nprepo;
-        private readonly IMapper _mapper;
 
-        public NationalParksController(INationalParkRepository nprepo, IMapper mapper)
+        public NationalParksController(INationalParkRepository nprepo)
         {
             _nprepo = nprepo;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -39,14 +34,7 @@ namespace ParkyAPI.Controllers
         {
             var objList = _nprepo.GetNationalParks();
 
-            var objDTo = new List<NationalParkDto>();
-
-            foreach (var obj in objList)
-            {
-                objDTo.Add(_mapper.Map<NationalParkDto>(obj));
-            }
-
-            return Ok(objDTo);
+            return Ok(objList.Map<ICollection<NationalPark>, ICollection<NationalParkDto>>());
         }
 
         /// <summary>
@@ -67,8 +55,7 @@ namespace ParkyAPI.Controllers
                 return NotFound();
             }
 
-            var objDTO = _mapper.Map<NationalParkDto>(obj);
-            return Ok(objDTO);
+            return Ok(obj.Map<NationalPark, NationalParkDto>());
         }
 
         [HttpPost]
@@ -76,7 +63,7 @@ namespace ParkyAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateNationalPark([FromBody] NationalParkDto nationalParkDto)
+        public IActionResult CreateNationalPark([FromBody] NationalParkCreateDto nationalParkDto)
         {
             if (nationalParkDto == null)
             {
@@ -94,7 +81,7 @@ namespace ParkyAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var nationalParkObj = _mapper.Map<NationalPark>(nationalParkDto);
+            var nationalParkObj = nationalParkDto.Map<NationalParkCreateDto, NationalPark>();
 
             if (!_nprepo.CreateNationalPark(nationalParkObj))
             {
@@ -106,17 +93,17 @@ namespace ParkyAPI.Controllers
         }
 
         [HttpPatch("{id:int}", Name = "UpdateNationalPark")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(204, Type = typeof(NationalParkUpdateDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateNationalPark(int id, [FromBody] NationalParkDto nationalParkDto)
+        public IActionResult UpdateNationalPark(int id, [FromBody] NationalParkUpdateDto nationalParkDto)
         {
             if (nationalParkDto == null || id != nationalParkDto.Id)
             {
                 return BadRequest(ModelState);
             }
 
-            var nationalParkObj = _mapper.Map<NationalPark>(nationalParkDto);
+            var nationalParkObj = nationalParkDto.Map<NationalParkUpdateDto, NationalPark>();
 
             if (!_nprepo.UpdateNationalPark(nationalParkObj))
             {

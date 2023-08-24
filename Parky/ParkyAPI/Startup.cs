@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ParkyAPI.Filter;
 
 namespace ParkyAPI
 {
@@ -47,7 +48,7 @@ namespace ParkyAPI
             services.AddScoped<ITrailRepository, TrailRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddControllers();
-            services.AddAutoMapper(typeof(ParkyMappings));
+            //services.AddAutoMapper(typeof(ParkyMappings));
             services.AddApiVersioning(options =>
             {
                 options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
@@ -57,7 +58,10 @@ namespace ParkyAPI
             });
             services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(config =>
+            {
+                config.SchemaFilter<ExampleSchemaFilter>();
+            });
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using ExpressMapper.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +21,10 @@ namespace ParkyAPI.Controllers
     public class TrailsController : ControllerBase
     {
         private readonly ITrailRepository _trailrepo;
-        private readonly IMapper _mapper;
 
-        public TrailsController(ITrailRepository trailrepo, IMapper mapper)
+        public TrailsController(ITrailRepository trailrepo)
         {
             _trailrepo = trailrepo;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -38,14 +37,7 @@ namespace ParkyAPI.Controllers
         {
             var objList = _trailrepo.GetTrails();
 
-            var objDTo = new List<TrailDto>();
-
-            foreach (var obj in objList)
-            {
-                objDTo.Add(_mapper.Map<TrailDto>(obj));
-            }
-
-            return Ok(objDTo);
+            return Ok(objList.Map<ICollection<Trail>, ICollection<TrailDto>>());
         }
 
         /// <summary>
@@ -66,8 +58,7 @@ namespace ParkyAPI.Controllers
                 return NotFound();
             }
 
-            var objDTO = _mapper.Map<TrailDto>(obj);
-            return Ok(objDTO);
+            return Ok(obj.Map<Trail, TrailDto>());
         }
 
         /// <summary>
@@ -87,13 +78,7 @@ namespace ParkyAPI.Controllers
                 return NotFound();
             }
 
-            var objDto = new List<TrailDto>();
-            foreach(var obj in objList)
-            {
-                objDto.Add(_mapper.Map<TrailDto>(obj));
-            }
-            
-            return Ok(objDto);
+            return Ok(objList.Map<ICollection<Trail>, ICollection<TrailDto>>());
         }
 
         [HttpPost]
@@ -119,7 +104,7 @@ namespace ParkyAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var trailsObj = _mapper.Map<Trail>(trailsDto);
+            var trailsObj = trailsDto.Map<TrailCreateDto, Trail>();
 
             if (!_trailrepo.CreateTrail(trailsObj))
             {
@@ -141,7 +126,7 @@ namespace ParkyAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var trailsObj = _mapper.Map<Trail>(trailsDto);
+            var trailsObj = trailsDto.Map<TrailUpdateDto, Trail>();
 
             if (!_trailrepo.UpdateTrail(trailsObj))
             {

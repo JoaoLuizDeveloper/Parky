@@ -99,7 +99,8 @@ namespace ParkyWeb.Controllers
             {
                 return View();
             }
-            TempData["alert"] = "Registeration Successful " + objUser.UserName;
+
+            TempData["alert"] = "Registeration Successful ";
             return RedirectToAction("Login");
         }
 

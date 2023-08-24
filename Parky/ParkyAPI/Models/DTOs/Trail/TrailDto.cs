@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 using static ParkyAPI.Models.Trail;
 
 namespace ParkyAPI.Models.DTOs
 {
-    public class TrailUpdateDto
+    public class TrailDto
     {
         public int Id { get; set; }
         [Required]
@@ -16,7 +12,6 @@ namespace ParkyAPI.Models.DTOs
 
         [Required]
         public double Distance { get; set; }
-
         [Required]
         public double Elevation { get; set; }
 
@@ -24,6 +19,8 @@ namespace ParkyAPI.Models.DTOs
 
         [Required]
         public int NationalParkId { get; set; }
+
+        public NationalParkDto NationalPark { get; set; }
 
         public DateTime DateCreated { get; set; }
     }
