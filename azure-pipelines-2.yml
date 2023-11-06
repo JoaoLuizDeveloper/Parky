@@ -9,8 +9,6 @@ trigger:
     - developer
     - master-*
     - master
-  paths:
-    - src/*
   exclude:
     - .gitignore
 pool:
