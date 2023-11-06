@@ -1,0 +1,23 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - developer
+    - master-*
+    - master
+  paths:
+    - src/*
+  exclude:
+    - .gitignore
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Exemplo de execução de pipeline a partir de uma trigger!
+  displayName: 'Run a one-line script'
+
+
