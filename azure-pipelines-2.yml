@@ -8,8 +8,6 @@ trigger:
     include:
     - developer
     - master
-  exclude:
-    - .gitignore
 pool:
   vmImage: ubuntu-latest
 
