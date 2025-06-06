@@ -1,4 +1,5 @@
 Parky
+<br />
 A personal project by João Luiz demonstrating a RESTful API built with ASP.NET Core Web API, following best practices for API development.
 
 📁 Project Structure
@@ -20,10 +21,8 @@ Azure Pipelines
 🚀 Getting Started
 Clone the repository:
 
-bash
-Copiar
-Editar
 git clone https://github.com/JoaoLuizDeveloper/Parky.git
+<br />
 cd Parky
 Set up the database:
 
@@ -33,9 +32,6 @@ Run the application:
 
 Open the solution in Visual Studio and run the project. Alternatively, use the .NET CLI:
 
-bash
-Copiar
-Editar
 dotnet build
 dotnet run
 The API will be available at http://localhost:5000.
